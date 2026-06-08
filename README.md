@@ -1,7 +1,5 @@
 # Debug Route Tracker V1.0
 
-中文说明为默认文档。English version: `README_EN.md`.
-
 Debug Route Tracker 是一个轻量级、静态化的调试路线追踪工具。它把每次调试尝试记录到 `debug_route_events.jsonl`，再生成浏览器可直接打开的图形页面、树形后备页面、Graph JSON 和 Markmap Markdown。
 
 ## 项目动机
