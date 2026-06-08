@@ -25,11 +25,9 @@ Debug Route Tracker 的目标是把“调试过程”显式记录成一张路线
 
 ## 图示例子
 
-直接打开仓库根目录下的示例页面：
+点击下方预览图可打开仓库根目录下的示例页面：
 
-```text
-react.html
-```
+[![Debug Route Tracker 图形示例](assets/debug_route_example.png)](react.html)
 
 这个页面内嵌了一组示例节点，用来展示主目标、分支路线、基线、候选尝试、失败尝试、证据节点、指标、源码引用和日志引用。它不会读取或修改你的真实 `debug_route_events.jsonl`。
 
