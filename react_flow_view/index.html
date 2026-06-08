@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Debug Route Tracker V1.0 Graph</title>
+  <link rel="stylesheet" href="react_flow_view.css">
+  <script src="../debug_route_data.js"></script>
+  <script defer src="react_flow_view.js"></script>
+</head>
+<body>
+<main class="app-shell">
+  <header class="topbar">
+    <div>
+      <h1>Debug Route Tracker V1.0</h1>
+      <p id="graphSummary">读取调试路线数据中...</p>
+    </div>
+    <nav aria-label="view links">
+      <a href="../index.html">后备树视图</a>
+      <a href="../debug_route_markmap.md">Markmap</a>
+      <a href="../debug_route_graph.json">Graph JSON</a>
+      <a href="../debug_route_events.jsonl">JSONL</a>
+    </nav>
+  </header>
+
+  <section class="workspace">
+    <aside class="sidebar" aria-label="filters">
+      <label>
+        <span>搜索</span>
+        <input id="searchInput" type="search" placeholder="节点、说明、标签、路径">
+      </label>
+      <label>
+        <span>状态</span>
+        <select id="statusFilter">
+          <option value="">全部状态</option>
+        </select>
+      </label>
+      <label>
+        <span>路线</span>
+        <select id="routeFilter">
+          <option value="">全部路线</option>
+        </select>
+      </label>
+      <label>
+        <span>子树</span>
+        <select id="subtreeFilter">
+          <option value="">全部节点</option>
+        </select>
+      </label>
+      <label class="check-row">
+        <input id="selectedPathOnly" type="checkbox">
+        <span>只显示选中路径</span>
+      </label>
+      <div class="button-row">
+        <button id="resetFilters" type="button">清除</button>
+        <button id="fitView" type="button">适配</button>
+      </div>
+      <div id="legend" class="legend" aria-label="status legend"></div>
+    </aside>
+
+    <section class="graph-area" aria-label="debug route graph">
+      <div id="graphViewport" class="graph-viewport">
+        <div id="graphContent" class="graph-content">
+          <svg id="edgeLayer" class="edge-layer" aria-hidden="true"></svg>
+          <div id="nodeLayer" class="node-layer"></div>
+        </div>
+        <div class="graph-controls" aria-label="graph controls">
+          <button id="zoomIn" type="button" title="放大">+</button>
+          <button id="zoomOut" type="button" title="缩小">-</button>
+          <button id="resetView" type="button" title="重置视图">1:1</button>
+        </div>
+        <svg id="miniMap" class="mini-map" aria-label="mini map"></svg>
+      </div>
+    </section>
+
+    <aside id="detailsPane" class="details" aria-label="details">
+      <h2>选择一个节点</h2>
+      <p>点击图上的节点查看路径、指标、代码引用和日志引用。节点可拖拽，画布支持缩放和平移。</p>
+    </aside>
+  </section>
+</main>
+</body>
+</html>

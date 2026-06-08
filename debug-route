@@ -1,0 +1,175 @@
+#!/usr/bin/env python3
+"""Small command wrapper for Debug Route Tracker V1.0."""
+
+from __future__ import annotations
+
+import argparse
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+
+def find_tool_dir() -> Path:
+    script_dir = Path(__file__).resolve().parent
+    env_home = os.environ.get("DEBUG_ROUTE_TRACKER_HOME")
+    candidates = [
+        Path(env_home).expanduser() if env_home else None,
+        script_dir,
+        script_dir / "debug_route_tracker",
+        script_dir.parent / "debug_route_tracker",
+        Path.cwd(),
+        Path.cwd() / "debug_route_tracker",
+    ]
+    for candidate in candidates:
+        if candidate is None:
+            continue
+        if (candidate / "init_debug_route_tracker.py").exists():
+            return candidate
+    raise SystemExit(
+        "cannot locate debug_route_tracker tool directory; "
+        "run this command from the repository root or set DEBUG_ROUTE_TRACKER_HOME"
+    )
+
+
+TOOL_DIR = find_tool_dir()
+
+
+def default_tracker_for(workspace: Path) -> Path:
+    if workspace.name == "debug_route_tracker":
+        return workspace
+    return workspace / "workspace_version_docs" / "debug_route_tracker"
+
+
+def run_python(script: str, args: list[str]) -> int:
+    env = dict(os.environ)
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    return subprocess.run([sys.executable, str(TOOL_DIR / script), *args], check=False, env=env).returncode
+
+
+def split_tracker(args: list[str]) -> tuple[Path, list[str]]:
+    cleaned: list[str] = []
+    tracker: Path | None = None
+    index = 0
+    while index < len(args):
+        arg = args[index]
+        if arg == "--tracker":
+            if index + 1 >= len(args):
+                raise SystemExit("--tracker requires a path")
+            tracker = Path(args[index + 1]).expanduser().resolve()
+            index += 2
+            continue
+        if arg.startswith("--tracker="):
+            tracker = Path(arg.split("=", 1)[1]).expanduser().resolve()
+            index += 1
+            continue
+        cleaned.append(arg)
+        index += 1
+    return tracker or default_tracker_for(Path.cwd()), cleaned
+
+
+def regen_tracker(tracker: Path) -> int:
+    events = tracker / "debug_route_events.jsonl"
+    code = run_python(
+        "generate_debug_route_data.py",
+        [
+            "--events",
+            str(events),
+            "--output",
+            str(tracker / "debug_route_data.js"),
+            "--graph-output",
+            str(tracker / "debug_route_graph.json"),
+        ],
+    )
+    if code != 0:
+        return code
+    return run_python(
+        "generate_markmap_summary.py",
+        ["--events", str(events), "--output", str(tracker / "debug_route_markmap.md")],
+    )
+
+
+def command_init(args: argparse.Namespace) -> int:
+    workspace = args.workspace.expanduser().resolve()
+    target = args.target.expanduser().resolve() if args.target else default_tracker_for(workspace)
+    command = ["--target", str(target)]
+    if args.force:
+        command.append("--force")
+    return run_python("init_debug_route_tracker.py", command)
+
+
+def command_add(forwarded: list[str], patch: bool = False) -> int:
+    tracker, add_args = split_tracker(forwarded)
+    if patch and "--op" not in add_args:
+        add_args = ["--op", "patch", *add_args]
+    return run_python(
+        "add_debug_event.py",
+        [
+            *add_args,
+            "--events",
+            str(tracker / "debug_route_events.jsonl"),
+            "--output",
+            str(tracker / "debug_route_data.js"),
+            "--graph-output",
+            str(tracker / "debug_route_graph.json"),
+        ],
+    )
+
+
+def command_regen(forwarded: list[str]) -> int:
+    tracker, remaining = split_tracker(forwarded)
+    if remaining:
+        raise SystemExit(f"unknown regen args: {' '.join(remaining)}")
+    return regen_tracker(tracker)
+
+
+def command_path(args: argparse.Namespace) -> int:
+    target = args.target.expanduser().resolve() if args.target else default_tracker_for(args.workspace.expanduser().resolve())
+    print(target / "react_flow_view" / "index.html")
+    return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="debug-route",
+        description="Initialize and maintain Debug Route Tracker V1.0 directories.",
+    )
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    init_parser = subparsers.add_parser("init", help="initialize one workspace tracker")
+    init_parser.add_argument("workspace", type=Path, nargs="?", default=Path.cwd())
+    init_parser.add_argument("--target", type=Path, default=None)
+    init_parser.add_argument("--force", action="store_true")
+
+    path_parser = subparsers.add_parser("path", help="print the main graph page path")
+    path_parser.add_argument("workspace", type=Path, nargs="?", default=Path.cwd())
+    path_parser.add_argument("--target", type=Path, default=None)
+
+    subparsers.add_parser("regen", help="regenerate graph data and Markmap")
+    subparsers.add_parser("add", help="append a new debug node; forwards add_debug_event.py args")
+    subparsers.add_parser("patch", help="append a patch event; forwards add_debug_event.py args")
+    return parser
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) >= 2 and argv[1] in {"add", "patch", "regen"}:
+        command = argv[1]
+        forwarded = argv[2:]
+        if command == "add":
+            return command_add(forwarded)
+        if command == "patch":
+            return command_add(forwarded, patch=True)
+        return command_regen(forwarded)
+
+    parser = build_parser()
+    args = parser.parse_args(argv[1:])
+    if args.command == "init":
+        return command_init(args)
+    if args.command == "path":
+        return command_path(args)
+    parser.error("unsupported command")
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

@@ -1,0 +1,91 @@
+window.DEBUG_ROUTE_DATA = {
+  "schema_version": "2.0",
+  "generated_at": "2026-06-08T22:12:02",
+  "event_count": 1,
+  "node_count": 1,
+  "edge_count": 0,
+  "status_styles": {
+    "todo": {
+      "label": "todo",
+      "color": "#64748b"
+    },
+    "active": {
+      "label": "active",
+      "color": "#0f766e"
+    },
+    "current": {
+      "label": "current",
+      "color": "#b45309"
+    },
+    "candidate": {
+      "label": "candidate",
+      "color": "#2563eb"
+    },
+    "passed": {
+      "label": "passed",
+      "color": "#15803d"
+    },
+    "failed": {
+      "label": "failed",
+      "color": "#b91c1c"
+    },
+    "abandoned": {
+      "label": "abandoned",
+      "color": "#6b7280"
+    },
+    "mixed": {
+      "label": "mixed",
+      "color": "#9f1239"
+    },
+    "evidence": {
+      "label": "evidence",
+      "color": "#166534",
+      "border": "dashed"
+    },
+    "baseline": {
+      "label": "baseline",
+      "color": "#111827",
+      "border": "thick"
+    },
+    "side": {
+      "label": "side",
+      "color": "#475569"
+    }
+  },
+  "routes": [
+    "mainline"
+  ],
+  "status_counts": {
+    "current": 1
+  },
+  "route_counts": {
+    "mainline": 1
+  },
+  "nodes": [
+    {
+      "parent_id": null,
+      "title": "Main debug objective",
+      "route": "mainline",
+      "status": "current",
+      "summary": "Replace this starter node with the current workspace objective.",
+      "links": [
+        {
+          "label": "Run ledger",
+          "href": "run_ledger.csv"
+        }
+      ],
+      "tags": [
+        "mainline"
+      ],
+      "metrics": {},
+      "code_refs": [],
+      "log_refs": [],
+      "created_at": "2026-06-08 00:00:00",
+      "id": "main-debug-objective",
+      "_order": 0,
+      "child_count": 0,
+      "depth": 0
+    }
+  ],
+  "edges": []
+};

@@ -1,0 +1,1 @@
+{"id":"main-debug-objective","parent_id":null,"title":"Main debug objective","route":"mainline","status":"current","summary":"Replace this starter node with the current workspace objective.","links":[{"label":"Run ledger","href":"run_ledger.csv"}],"tags":["mainline"],"metrics":{},"code_refs":[],"log_refs":[],"created_at":"2026-06-08 00:00:00"}

@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Debug Route Tracker 图形示例</title>
+  <link rel="stylesheet" href="react_flow_view/react_flow_view.css">
+  <script>
+    window.DEBUG_ROUTE_DATA = {
+      schema_version: "2.0",
+      generated_at: "example",
+      event_count: 8,
+      node_count: 8,
+      edge_count: 7,
+      status_styles: {
+        todo: { label: "todo", color: "#64748b" },
+        active: { label: "active", color: "#0f766e" },
+        current: { label: "current", color: "#b45309" },
+        candidate: { label: "candidate", color: "#2563eb" },
+        passed: { label: "passed", color: "#15803d" },
+        failed: { label: "failed", color: "#b91c1c" },
+        abandoned: { label: "abandoned", color: "#6b7280" },
+        mixed: { label: "mixed", color: "#9f1239" },
+        evidence: { label: "evidence", color: "#166534", border: "dashed" },
+        baseline: { label: "baseline", color: "#111827", border: "thick" },
+        side: { label: "side", color: "#475569" }
+      },
+      routes: ["mainline", "input-check", "parameter-tuning", "module-change"],
+      status_counts: {
+        current: 2,
+        candidate: 1,
+        passed: 1,
+        failed: 1,
+        evidence: 2,
+        baseline: 1
+      },
+      route_counts: {
+        mainline: 1,
+        "input-check": 2,
+        "parameter-tuning": 3,
+        "module-change": 2
+      },
+      nodes: [
+        {
+          id: "main-debug-objective",
+          parent_id: null,
+          title: "主目标：恢复当前系统稳定性",
+          route: "mainline",
+          status: "current",
+          summary: "所有调试尝试都必须说明自己服务于哪条路线，以及是否偏离主线。",
+          links: [{ label: "运行账本", href: "run_ledger.csv" }],
+          tags: ["mainline"],
+          metrics: {},
+          code_refs: [],
+          log_refs: [],
+          created_at: "2026-06-08 09:00",
+          _order: 0
+        },
+        {
+          id: "input-check-route",
+          parent_id: "main-debug-objective",
+          title: "路线 A：输入数据检查",
+          route: "input-check",
+          status: "passed",
+          summary: "先确认输入格式、时间戳、字段完整性和测试窗口一致。",
+          links: [],
+          tags: ["input"],
+          metrics: { checked_files: 4 },
+          code_refs: [],
+          log_refs: [{ label: "输入检查日志", href: "logs/input_check.log" }],
+          created_at: "2026-06-08 09:20",
+          _order: 2
+        },
+        {
+          id: "baseline-run",
+          parent_id: "main-debug-objective",
+          title: "基线：原始配置回放",
+          route: "parameter-tuning",
+          status: "baseline",
+          summary: "所有候选改进都必须和同一窗口、同一输入、同一指标的基线比较。",
+          links: [{ label: "基线结果", href: "reports/baseline.csv" }],
+          tags: ["baseline"],
+          metrics: { score: 71.3, replay_s: 120 },
+          code_refs: [],
+          log_refs: [{ label: "基线日志", href: "logs/baseline.log" }],
+          created_at: "2026-06-08 10:00",
+          _order: 1
+        },
+        {
+          id: "param-route",
+          parent_id: "main-debug-objective",
+          title: "路线 B：参数调试",
+          route: "parameter-tuning",
+          status: "current",
+          summary: "一次只改变一个关键参数，避免把多个机制混在同一轮比较。",
+          links: [],
+          tags: ["config"],
+          metrics: {},
+          code_refs: [{ label: "配置文件", href: "config/main.yaml" }],
+          log_refs: [],
+          created_at: "2026-06-08 10:30",
+          _order: 3
+        },
+        {
+          id: "trial-param-001",
+          parent_id: "param-route",
+          title: "trial-001：放宽准入阈值",
+          route: "parameter-tuning",
+          status: "failed",
+          summary: "短窗口指标上升，但长窗口不稳定；该分支停止推进。",
+          links: [],
+          tags: ["trial"],
+          metrics: { score: 68.9, replay_s: 120 },
+          code_refs: [{ label: "参数位置", href: "config/main.yaml" }],
+          log_refs: [{ label: "失败日志", href: "logs/trial_param_001.log" }],
+          created_at: "2026-06-08 11:00",
+          _order: 4
+        },
+        {
+          id: "trial-param-002",
+          parent_id: "param-route",
+          title: "trial-002：收紧异常值过滤",
+          route: "parameter-tuning",
+          status: "candidate",
+          summary: "稳定性改善，仍需在更长窗口和更多输入上复核。",
+          links: [{ label: "候选报告", href: "reports/trial_param_002.md" }],
+          tags: ["candidate"],
+          metrics: { score: 76.5, replay_s: 120 },
+          code_refs: [{ label: "参数位置", href: "config/main.yaml" }],
+          log_refs: [{ label: "候选日志", href: "logs/trial_param_002.log" }],
+          created_at: "2026-06-08 11:40",
+          _order: 5
+        },
+        {
+          id: "module-route",
+          parent_id: "main-debug-objective",
+          title: "路线 C：模块实现改动",
+          route: "module-change",
+          status: "evidence",
+          summary: "记录源码改动涉及的模块、函数和影响范围。",
+          links: [],
+          tags: ["source"],
+          metrics: {},
+          code_refs: [{ label: "核心模块", href: "src/module/core.cpp" }],
+          log_refs: [],
+          created_at: "2026-06-08 12:20",
+          _order: 6
+        },
+        {
+          id: "evidence-module-log",
+          parent_id: "module-route",
+          title: "证据：模块改动回放日志",
+          route: "module-change",
+          status: "evidence",
+          summary: "用于确认模块改动是否真正影响目标指标，而不是只改变了局部日志。",
+          links: [{ label: "回放摘要", href: "reports/module_replay.md" }],
+          tags: ["evidence", "log"],
+          metrics: { warnings: 2, errors: 0 },
+          code_refs: [{ label: "核心模块", href: "src/module/core.cpp" }],
+          log_refs: [{ label: "模块回放日志", href: "logs/module_replay.log" }],
+          created_at: "2026-06-08 12:45",
+          _order: 7
+        }
+      ],
+      edges: [
+        { id: "main-debug-objective->input-check-route", source: "main-debug-objective", target: "input-check-route", type: "parent" },
+        { id: "main-debug-objective->baseline-run", source: "main-debug-objective", target: "baseline-run", type: "parent" },
+        { id: "main-debug-objective->param-route", source: "main-debug-objective", target: "param-route", type: "parent" },
+        { id: "param-route->trial-param-001", source: "param-route", target: "trial-param-001", type: "parent" },
+        { id: "param-route->trial-param-002", source: "param-route", target: "trial-param-002", type: "parent" },
+        { id: "main-debug-objective->module-route", source: "main-debug-objective", target: "module-route", type: "parent" },
+        { id: "module-route->evidence-module-log", source: "module-route", target: "evidence-module-log", type: "parent" }
+      ]
+    };
+  </script>
+  <script defer src="react_flow_view/react_flow_view.js"></script>
+</head>
+<body>
+<main class="app-shell">
+  <header class="topbar">
+    <div>
+      <h1>Debug Route Tracker 图形示例</h1>
+      <p id="graphSummary">读取示例数据中...</p>
+    </div>
+    <nav aria-label="view links">
+      <a href="README.md">中文说明</a>
+      <a href="README_EN.md">English</a>
+      <a href="react_flow_view/index.html">真实数据视图</a>
+      <a href="index.html">后备树视图</a>
+    </nav>
+  </header>
+
+  <section class="workspace">
+    <aside class="sidebar" aria-label="filters">
+      <label>
+        <span>搜索</span>
+        <input id="searchInput" type="search" placeholder="节点、说明、标签、路径">
+      </label>
+      <label>
+        <span>状态</span>
+        <select id="statusFilter">
+          <option value="">全部状态</option>
+        </select>
+      </label>
+      <label>
+        <span>路线</span>
+        <select id="routeFilter">
+          <option value="">全部路线</option>
+        </select>
+      </label>
+      <label>
+        <span>子树</span>
+        <select id="subtreeFilter">
+          <option value="">全部节点</option>
+        </select>
+      </label>
+      <label class="check-row">
+        <input id="selectedPathOnly" type="checkbox">
+        <span>只显示选中路径</span>
+      </label>
+      <div class="button-row">
+        <button id="resetFilters" type="button">清除</button>
+        <button id="fitView" type="button">适配</button>
+      </div>
+      <div id="legend" class="legend" aria-label="status legend"></div>
+    </aside>
+
+    <section class="graph-area" aria-label="debug route graph">
+      <div id="graphViewport" class="graph-viewport">
+        <div id="graphContent" class="graph-content">
+          <svg id="edgeLayer" class="edge-layer" aria-hidden="true"></svg>
+          <div id="nodeLayer" class="node-layer"></div>
+        </div>
+        <div class="graph-controls" aria-label="graph controls">
+          <button id="zoomIn" type="button" title="放大">+</button>
+          <button id="zoomOut" type="button" title="缩小">-</button>
+          <button id="resetView" type="button" title="重置视图">1:1</button>
+        </div>
+        <svg id="miniMap" class="mini-map" aria-label="mini map"></svg>
+      </div>
+    </section>
+
+    <aside id="detailsPane" class="details" aria-label="details">
+      <h2>选择一个节点</h2>
+      <p>这是内嵌示例数据，不读取或修改你的真实 <code>debug_route_events.jsonl</code>。</p>
+    </aside>
+  </section>
+</main>
+</body>
+</html>

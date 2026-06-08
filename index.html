@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Debug Route Tracker V1.0</title>
+  <link rel="stylesheet" href="debug_route.css">
+  <script src="debug_route_data.js"></script>
+  <script defer src="debug_route_app.js"></script>
+</head>
+<body>
+<main>
+  <h1>Debug Route Tracker V1.0 后备树视图</h1>
+  <p class="summary">
+    这是 V1.0 的固定后备入口页。主图形界面在 <code>react_flow_view/index.html</code>，树节点仍然来自 <code>debug_route_events.jsonl</code> 生成的数据。
+  </p>
+
+  <nav class="toolbar" aria-label="debug links">
+    <a href="react_flow_view/index.html">V1.0 图形主视图</a>
+    <a href="README.md">使用说明</a>
+    <a href="debug_route_markmap.md">Markmap 汇总</a>
+    <a href="debug_route_graph.json">Graph JSON</a>
+    <a href="run_ledger.csv">运行账本 CSV</a>
+    <a href="feature_run_summary.csv">Feature 汇总 CSV</a>
+    <a href="debug_route_events.jsonl">路线事件 JSONL</a>
+    <button type="button" id="expandAll">展开全部</button>
+    <button type="button" id="collapseAll">折叠全部</button>
+    <button type="button" id="focusSelected">只展开当前路径</button>
+  </nav>
+
+  <section class="filters" aria-label="filters">
+    <input id="search" type="search" placeholder="搜索节点、模块、状态、标签或说明">
+    <select id="statusFilter" aria-label="status filter">
+      <option value="">全部状态</option>
+    </select>
+    <select id="routeFilter" aria-label="route filter">
+      <option value="">全部路线</option>
+    </select>
+    <button type="button" id="resetFilters">清除过滤</button>
+  </section>
+
+  <div class="layout">
+    <section class="tree">
+      <div id="treeRoot"></div>
+    </section>
+    <aside class="details" id="detailsPane">
+      <h2>选择一个节点</h2>
+      <p>点击树上的节点可以查看状态、父路线、链接和说明。点击有子路线的节点可以折叠或展开。</p>
+    </aside>
+  </div>
+</main>
+</body>
+</html>
