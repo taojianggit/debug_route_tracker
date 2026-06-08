@@ -3,9 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Debug Route Tracker 图形示例</title>
+  <title>Debug Route Tracker 复杂调试案例</title>
   <link rel="stylesheet" href="react_flow_view/react_flow_view.css">
   <script>
+    // Fallback data. The 12-node complex case in examples/complex_bug_data.js
+    // loads below and overrides this when the example assets are present.
     window.DEBUG_ROUTE_DATA = {
       schema_version: "2.0",
       generated_at: "example",
@@ -173,13 +175,14 @@
       ]
     };
   </script>
+  <script src="examples/complex_bug_data.js"></script>
   <script defer src="react_flow_view/react_flow_view.js"></script>
 </head>
 <body>
 <main class="app-shell">
   <header class="topbar">
     <div>
-      <h1>Debug Route Tracker 图形示例</h1>
+      <h1>Debug Route Tracker 复杂调试案例</h1>
       <p id="graphSummary">读取示例数据中...</p>
     </div>
     <nav aria-label="view links">
@@ -242,7 +245,7 @@
 
     <aside id="detailsPane" class="details" aria-label="details">
       <h2>选择一个节点</h2>
-      <p>这是内嵌示例数据，不读取或修改你的真实 <code>debug_route_events.jsonl</code>。</p>
+      <p>这是 12 节点复杂 bug 案例，不读取或修改你的真实 <code>debug_route_events.jsonl</code>。</p>
     </aside>
   </section>
 </main>

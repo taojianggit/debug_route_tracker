@@ -19,9 +19,14 @@ from generate_markmap_summary import generate_markmap  # noqa: E402
 
 ASSET_FILES = [
     "README.md",
+    "README_EN.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "CODEX.md",
     "VERSION",
     "debug-route",
     "upgrade_plan.md",
+    "react.html",
     "index.html",
     "debug_route.css",
     "debug_route_app.js",
@@ -30,6 +35,12 @@ ASSET_FILES = [
     "generate_markmap_summary.py",
     "add_debug_event.py",
     "summarize_feature_statistics.py",
+]
+
+ASSET_DIRS = [
+    "assets",
+    "examples",
+    "react_flow_view",
 ]
 
 LEDGER_FIELDS = [
@@ -64,12 +75,13 @@ def copy_file(source: Path, target: Path, force: bool) -> None:
 def copy_assets(target_dir: Path, force: bool) -> None:
     for name in ASSET_FILES:
         copy_file(SCRIPT_DIR / name, target_dir / name, force)
-    source_view = SCRIPT_DIR / "react_flow_view"
-    target_view = target_dir / "react_flow_view"
-    target_view.mkdir(parents=True, exist_ok=True)
-    for source in source_view.iterdir():
-        if source.is_file():
-            copy_file(source, target_view / source.name, force)
+    for name in ASSET_DIRS:
+        source_dir = SCRIPT_DIR / name
+        if not source_dir.exists():
+            continue
+        for source in source_dir.rglob("*"):
+            if source.is_file():
+                copy_file(source, target_dir / name / source.relative_to(source_dir), force)
 
 
 def ensure_starter_files(target_dir: Path) -> Path:

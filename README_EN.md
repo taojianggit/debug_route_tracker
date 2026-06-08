@@ -1,10 +1,14 @@
 # Debug Route Tracker V1.0
 
-V1.0 keeps `debug_route_events.jsonl` as the only manual debug-route data source. Browser data, graph JSON, and Markmap Markdown are generated artifacts.
+A local-first map of what you tried, why, and what failed.
+
+Stop losing context across long debugging sessions.
 
 ## Project Overview
 
-Debug Route Tracker is a small, static debug-history tracker for code workspaces. It records debug attempts as JSONL events, generates browser-readable graph data, and provides a local HTML graph page for reviewing routes, status, logs, metrics, and source references.
+Debug Route Tracker is a route map for AI-assisted coding and complex debugging. It records each attempt, branch, failure, evidence item, and conclusion so long Codex, Claude Code, Cursor, or other agent sessions do not lose the debugging path.
+
+V1.0 keeps `debug_route_events.jsonl` as the only manual debug-route data source. Browser data, graph JSON, and Markmap Markdown are generated artifacts.
 
 The main view is `react_flow_view/index.html`. It is a local graph-style view implemented with plain browser JavaScript; it does not bundle or import the React Flow package.
 
@@ -50,9 +54,27 @@ cd /path/to/YOUR_WORKSPACE/workspace_version_docs/debug_route_tracker
 
 Each workspace has its own tracker page and data directory, so different workspaces do not overlap.
 
+## AI Agent Integration
+
+The selling point is not the static page. The point is that AI debugging keeps its route memory.
+
+This repository includes instruction examples that can be copied into a workspace root:
+
+- `AGENTS.md`: generic AI agent instructions.
+- `CLAUDE.md`: Claude Code instructions.
+- `CODEX.md`: Codex instructions.
+
+Agents should not log every shell command. They should write meaningful route nodes: baseline, branch attempt, failed trial, evidence, candidate fix, final fix, and next resume point.
+
+## Static Walkthrough
+
+This walkthrough starts with the full route, then breaks down the same route: baseline first, failed branches kept visible, candidate fix marked after several rounds, and a final validation node left as the resume point.
+
+![Debug Route Tracker static walkthrough](assets/debug_route_walkthrough.png)
+
 ## Open Views
 
-- `react.html`: standalone graph example with embedded sample data; it does not read or modify your real `debug_route_events.jsonl`.
+- `react.html`: standalone 12-node complex bug case showing baseline, failed trials, evidence, candidate fix, final fix, and validation. It does not read or modify your real `debug_route_events.jsonl`.
 - `react_flow_view/index.html`: V1.0 graph view with drag, zoom, MiniMap, filters, selected path, subtree focus, and detail panel.
 - `index.html`: lightweight fallback tree view that opens directly in a browser.
 - `debug_route_markmap.md`: generated Markmap-compatible hierarchy summary.

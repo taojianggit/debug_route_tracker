@@ -1,6 +1,14 @@
 # Debug Route Tracker V1.0
 
-Debug Route Tracker 是一个轻量级、静态化的调试路线追踪工具。它把每次调试尝试记录到 `debug_route_events.jsonl`，再生成浏览器可直接打开的图形页面、树形后备页面、Graph JSON 和 Markmap Markdown。
+A local-first map of what you tried, why, and what failed.
+
+Stop losing context across long debugging sessions.
+
+Debug Route Tracker 是给 AI 编程和复杂调试用的路线图：记录每次尝试、分支、失败、证据和结论。
+
+它适合 Codex、Claude Code、Cursor 等 AI 辅助编程场景。调试十几轮以后，你仍然可以看清做过什么、为什么改、哪个分支失败了，以及当前路线是否偏离主线目标。
+
+它把每次调试尝试记录到 `debug_route_events.jsonl`，再生成浏览器可直接打开的图形页面、树形后备页面、Graph JSON 和 Markmap Markdown。
 
 ## 项目动机
 
@@ -22,12 +30,17 @@ Debug Route Tracker 的目标是把“调试过程”显式记录成一张路线
 - 本地静态页面：不需要服务端，直接打开 HTML 即可查看。
 - 工作空间隔离：每个源码工作空间都有自己的 tracker 目录，数据不会互相重叠。
 - 可恢复上下文：通过图形页面快速查看当前路径、历史尝试、失败分支和下一步方向。
+- AI 调试路线记忆：配套 `AGENTS.md`、`CLAUDE.md`、`CODEX.md` 示例，让 AI agent 在调试时自动记录路线。
 
-## 图示例子
+## 示例案例
 
-[![Debug Route Tracker 图形示例](assets/debug_route_example.png)](react.html)
+这个页面展示一个 12 节点复杂 bug 案例：从 baseline 复现，到失败分支、证据节点、候选修复、最终修复和回归验证。用户看完可以直接理解这个工具解决的是“AI 调试多轮以后上下文丢失”的问题。
 
-这个页面内嵌了一组示例节点，用来展示主目标、分支路线、基线、候选尝试、失败尝试、证据节点、指标、源码引用和日志引用。它不会读取或修改你的真实 `debug_route_events.jsonl`。
+案例数据来自 `examples/complex_bug_events.jsonl`，页面只读取生成后的 `examples/complex_bug_data.js`，不会读取或修改你的真实 `debug_route_events.jsonl`。
+
+这张图先给出完整调试路线总览，再从同一条路线拆解：先确认 baseline，再保留失败分支，接着标记候选修复，最后留下可恢复的验证节点。
+
+![Debug Route Tracker 静态拆解](assets/debug_route_walkthrough.png)
 
 初始化到具体工作空间后，真实数据页面在：
 
@@ -86,8 +99,34 @@ cd /path/to/YOUR_WORKSPACE/workspace_version_docs/debug_route_tracker
 ./debug-route add --id trial-YYYYMMDD-name --parent main-debug-objective --title "New trial" --status current --route route-name --summary "Purpose, result, conclusion"
 ```
 
+## AI Agent 集成
+
+这个项目的卖点不是“静态页面”，而是让 AI 调试不会丢路线。仓库包含三份可复制到工作空间根目录的 agent 指令示例：
+
+- `AGENTS.md`：通用 AI agent 指令。
+- `CLAUDE.md`：Claude Code 指令。
+- `CODEX.md`：Codex 指令。
+
+核心规则是：AI agent 不需要记录每个 shell 命令，但必须在重要节点写入调试路线，包括 baseline、分支尝试、失败原因、证据、候选修复、最终修复和下一步恢复点。
+
+典型写入方式：
+
+```bash
+TRACKER=workspace_version_docs/debug_route_tracker
+$TRACKER/debug-route add --tracker "$TRACKER" \
+  --id trial-YYYYMMDD-short-name \
+  --parent main-debug-objective \
+  --title "Trial: concise branch title" \
+  --status current \
+  --route route-name \
+  --summary "Hypothesis, result, conclusion" \
+  --code-ref source=src/path/to/file.ext \
+  --log-ref run=logs/run-output.log
+```
+
 ## 页面入口
 
+- `react.html`：12 节点复杂 bug 示例，展示 baseline、失败尝试、证据、候选修复和最终验证。
 - `react_flow_view/index.html`：主图形页面，支持拖拽、缩放、MiniMap、过滤、选中路径、子树聚焦和详情面板。
 - `index.html`：后备树形视图，可直接用浏览器打开。
 - `debug_route_markmap.md`：生成的 Markmap 兼容层级摘要。

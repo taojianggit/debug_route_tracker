@@ -1,0 +1,557 @@
+{
+  "schema_version": "2.0",
+  "generated_at": "2026-06-08T23:48:30",
+  "event_count": 12,
+  "node_count": 12,
+  "edge_count": 11,
+  "status_styles": {
+    "todo": {
+      "label": "todo",
+      "color": "#64748b"
+    },
+    "active": {
+      "label": "active",
+      "color": "#0f766e"
+    },
+    "current": {
+      "label": "current",
+      "color": "#b45309"
+    },
+    "candidate": {
+      "label": "candidate",
+      "color": "#2563eb"
+    },
+    "passed": {
+      "label": "passed",
+      "color": "#15803d"
+    },
+    "failed": {
+      "label": "failed",
+      "color": "#b91c1c"
+    },
+    "abandoned": {
+      "label": "abandoned",
+      "color": "#6b7280"
+    },
+    "mixed": {
+      "label": "mixed",
+      "color": "#9f1239"
+    },
+    "evidence": {
+      "label": "evidence",
+      "color": "#166534",
+      "border": "dashed"
+    },
+    "baseline": {
+      "label": "baseline",
+      "color": "#111827",
+      "border": "thick"
+    },
+    "side": {
+      "label": "side",
+      "color": "#475569"
+    }
+  },
+  "routes": [
+    "baseline",
+    "cache-investigation",
+    "final-fix",
+    "input-check",
+    "mainline"
+  ],
+  "status_counts": {
+    "baseline": 1,
+    "candidate": 1,
+    "current": 2,
+    "evidence": 3,
+    "failed": 2,
+    "passed": 3
+  },
+  "route_counts": {
+    "baseline": 2,
+    "cache-investigation": 4,
+    "final-fix": 2,
+    "input-check": 3,
+    "mainline": 1
+  },
+  "nodes": [
+    {
+      "parent_id": null,
+      "title": "Goal: stop checkout timeout regression",
+      "route": "mainline",
+      "status": "current",
+      "summary": "AI-assisted debugging has already tried multiple branches; keep the baseline, failures, evidence, and final fix connected.",
+      "links": [
+        {
+          "label": "Run ledger",
+          "href": "run_ledger.csv"
+        }
+      ],
+      "tags": [
+        "ai-debugging",
+        "mainline"
+      ],
+      "metrics": {
+        "bug": "checkout timeout",
+        "reported_fail_rate": 0.37
+      },
+      "code_refs": [],
+      "log_refs": [],
+      "created_at": "2026-06-08 09:00:00",
+      "id": "main-debug-objective",
+      "_order": 0,
+      "child_count": 3,
+      "depth": 0
+    },
+    {
+      "parent_id": "main-debug-objective",
+      "title": "Baseline: reproduce flaky timeout",
+      "route": "baseline",
+      "status": "baseline",
+      "summary": "Same commit, same seed data, same 5 minute checkout replay. 37% of runs timeout after the payment step.",
+      "links": [
+        {
+          "label": "Baseline report",
+          "href": "reports/baseline_checkout_timeout.md"
+        }
+      ],
+      "tags": [
+        "baseline"
+      ],
+      "metrics": {
+        "runs": 30,
+        "failures": 11,
+        "fail_rate": 0.37,
+        "p95_ms": 18400
+      },
+      "code_refs": [],
+      "log_refs": [
+        {
+          "label": "Baseline logs",
+          "href": "logs/baseline_checkout_timeout.log"
+        }
+      ],
+      "created_at": "2026-06-08 09:20:00",
+      "id": "baseline-run",
+      "_order": 1,
+      "child_count": 1,
+      "depth": 1
+    },
+    {
+      "parent_id": "baseline-run",
+      "title": "Evidence: timeout happens after payment token refresh",
+      "route": "baseline",
+      "status": "evidence",
+      "summary": "The timeout is not random UI lag. It clusters after token refresh and before cart cache invalidation.",
+      "links": [
+        {
+          "label": "Trace slice",
+          "href": "reports/baseline_trace_slice.json"
+        }
+      ],
+      "tags": [
+        "evidence",
+        "trace"
+      ],
+      "metrics": {
+        "token_refresh_seen": 11,
+        "cache_invalidation_seen": 0
+      },
+      "code_refs": [
+        {
+          "label": "Checkout flow",
+          "href": "src/checkout/flow.ts"
+        }
+      ],
+      "log_refs": [
+        {
+          "label": "Trace logs",
+          "href": "logs/baseline_trace.log"
+        }
+      ],
+      "created_at": "2026-06-08 09:45:00",
+      "id": "baseline-evidence",
+      "_order": 2,
+      "child_count": 0,
+      "depth": 2
+    },
+    {
+      "parent_id": "main-debug-objective",
+      "title": "Route A: verify input and replay window",
+      "route": "input-check",
+      "status": "passed",
+      "summary": "Rule out bad fixtures, clock skew, and mixed replay windows before changing code.",
+      "links": [],
+      "tags": [
+        "route",
+        "input"
+      ],
+      "metrics": {
+        "fixtures_checked": 4
+      },
+      "code_refs": [],
+      "log_refs": [
+        {
+          "label": "Input audit",
+          "href": "logs/input_audit.log"
+        }
+      ],
+      "created_at": "2026-06-08 10:00:00",
+      "id": "input-check-route",
+      "_order": 3,
+      "child_count": 1,
+      "depth": 1
+    },
+    {
+      "parent_id": "input-check-route",
+      "title": "Failed trial: extend API timeout",
+      "route": "input-check",
+      "status": "failed",
+      "summary": "Raising the timeout hides the symptom for short runs but still fails under concurrent checkout replay.",
+      "links": [],
+      "tags": [
+        "failed-trial"
+      ],
+      "metrics": {
+        "timeout_ms": 30000,
+        "fail_rate": 0.29,
+        "p95_ms": 31200
+      },
+      "code_refs": [
+        {
+          "label": "API client timeout",
+          "href": "src/api/client.ts"
+        }
+      ],
+      "log_refs": [
+        {
+          "label": "Extended timeout run",
+          "href": "logs/trial_extend_timeout.log"
+        }
+      ],
+      "created_at": "2026-06-08 10:25:00",
+      "id": "trial-extend-timeout",
+      "_order": 4,
+      "child_count": 1,
+      "depth": 2
+    },
+    {
+      "parent_id": "trial-extend-timeout",
+      "title": "Evidence: timeout is not the root cause",
+      "route": "input-check",
+      "status": "evidence",
+      "summary": "Slow calls wait on the same stale cart lock. More timeout budget only delays the failure.",
+      "links": [
+        {
+          "label": "Lock wait chart",
+          "href": "reports/lock_wait_chart.png"
+        }
+      ],
+      "tags": [
+        "evidence",
+        "lock"
+      ],
+      "metrics": {
+        "avg_lock_wait_ms": 12900
+      },
+      "code_refs": [
+        {
+          "label": "Cart lock",
+          "href": "src/cart/cache.ts"
+        }
+      ],
+      "log_refs": [
+        {
+          "label": "Lock wait logs",
+          "href": "logs/lock_wait.log"
+        }
+      ],
+      "created_at": "2026-06-08 10:45:00",
+      "id": "evidence-timeout-not-root",
+      "_order": 5,
+      "child_count": 0,
+      "depth": 3
+    },
+    {
+      "parent_id": "main-debug-objective",
+      "title": "Route B: inspect cart cache invalidation",
+      "route": "cache-investigation",
+      "status": "current",
+      "summary": "The strongest evidence points to cache state: payment token refresh completes, but the cart cache keeps the previous lock owner.",
+      "links": [],
+      "tags": [
+        "route",
+        "cache"
+      ],
+      "metrics": {},
+      "code_refs": [
+        {
+          "label": "Cart cache",
+          "href": "src/cart/cache.ts"
+        }
+      ],
+      "log_refs": [],
+      "created_at": "2026-06-08 11:00:00",
+      "id": "cache-route",
+      "_order": 6,
+      "child_count": 2,
+      "depth": 1
+    },
+    {
+      "parent_id": "cache-route",
+      "title": "Failed trial: disable cart cache",
+      "route": "cache-investigation",
+      "status": "failed",
+      "summary": "Disabling cache removes the timeout but creates unacceptable p95 latency and breaks inventory consistency tests.",
+      "links": [],
+      "tags": [
+        "failed-trial"
+      ],
+      "metrics": {
+        "fail_rate": 0.0,
+        "p95_ms": 48700,
+        "inventory_test": "failed"
+      },
+      "code_refs": [
+        {
+          "label": "Cart cache toggle",
+          "href": "src/cart/cache.ts"
+        }
+      ],
+      "log_refs": [
+        {
+          "label": "No-cache replay",
+          "href": "logs/trial_disable_cache.log"
+        }
+      ],
+      "created_at": "2026-06-08 11:35:00",
+      "id": "trial-disable-cache",
+      "_order": 7,
+      "child_count": 0,
+      "depth": 2
+    },
+    {
+      "parent_id": "cache-route",
+      "title": "Candidate: scope cache key by payment token version",
+      "route": "cache-investigation",
+      "status": "candidate",
+      "summary": "Keep cache enabled, but include token version in the cart lock key so refreshes cannot reuse a stale owner.",
+      "links": [
+        {
+          "label": "Candidate diff",
+          "href": "reports/cache_key_candidate.diff"
+        }
+      ],
+      "tags": [
+        "candidate"
+      ],
+      "metrics": {
+        "fail_rate": 0.03,
+        "p95_ms": 19700
+      },
+      "code_refs": [
+        {
+          "label": "Cart cache key",
+          "href": "src/cart/cache.ts"
+        },
+        {
+          "label": "Payment token",
+          "href": "src/payment/token.ts"
+        }
+      ],
+      "log_refs": [
+        {
+          "label": "Candidate replay",
+          "href": "logs/trial_cache_key_scope.log"
+        }
+      ],
+      "created_at": "2026-06-08 12:10:00",
+      "id": "trial-cache-key-scope",
+      "_order": 8,
+      "child_count": 2,
+      "depth": 2
+    },
+    {
+      "parent_id": "trial-cache-key-scope",
+      "title": "Evidence: stale lock disappears with scoped key",
+      "route": "cache-investigation",
+      "status": "evidence",
+      "summary": "The remaining single failure is unrelated inventory throttling. Stale lock waits drop to zero across the checkout replay.",
+      "links": [
+        {
+          "label": "Before after trace",
+          "href": "reports/cache_key_before_after.md"
+        }
+      ],
+      "tags": [
+        "evidence",
+        "trace"
+      ],
+      "metrics": {
+        "stale_lock_waits": 0,
+        "unrelated_failures": 1
+      },
+      "code_refs": [
+        {
+          "label": "Cart cache key",
+          "href": "src/cart/cache.ts"
+        }
+      ],
+      "log_refs": [
+        {
+          "label": "Scoped key trace",
+          "href": "logs/cache_key_trace.log"
+        }
+      ],
+      "created_at": "2026-06-08 12:35:00",
+      "id": "evidence-cache-key-fits",
+      "_order": 9,
+      "child_count": 0,
+      "depth": 3
+    },
+    {
+      "parent_id": "trial-cache-key-scope",
+      "title": "Final fix: versioned cart lock key",
+      "route": "final-fix",
+      "status": "passed",
+      "summary": "Implement the scoped cache key and add a regression test that refreshes the payment token during checkout.",
+      "links": [
+        {
+          "label": "Fix PR",
+          "href": "https://github.com/example/shop/pull/418"
+        }
+      ],
+      "tags": [
+        "final-fix"
+      ],
+      "metrics": {
+        "fail_rate": 0.0,
+        "p95_ms": 18900
+      },
+      "code_refs": [
+        {
+          "label": "Cache fix",
+          "href": "src/cart/cache.ts"
+        },
+        {
+          "label": "Regression test",
+          "href": "tests/checkout_timeout.test.ts"
+        }
+      ],
+      "log_refs": [
+        {
+          "label": "Fix replay logs",
+          "href": "logs/final_fix_replay.log"
+        }
+      ],
+      "created_at": "2026-06-08 13:10:00",
+      "id": "final-fix",
+      "_order": 10,
+      "child_count": 1,
+      "depth": 3
+    },
+    {
+      "parent_id": "final-fix",
+      "title": "Passed: 100-run regression replay",
+      "route": "final-fix",
+      "status": "passed",
+      "summary": "The fix passes the long replay and preserves the baseline latency envelope. This is the node the next session should resume from.",
+      "links": [
+        {
+          "label": "Regression report",
+          "href": "reports/final_regression_report.md"
+        }
+      ],
+      "tags": [
+        "passed",
+        "resume-here"
+      ],
+      "metrics": {
+        "runs": 100,
+        "failures": 0,
+        "fail_rate": 0.0,
+        "p95_ms": 19100
+      },
+      "code_refs": [],
+      "log_refs": [
+        {
+          "label": "100-run replay",
+          "href": "logs/final_100_run_replay.log"
+        }
+      ],
+      "created_at": "2026-06-08 14:00:00",
+      "id": "final-regression-run",
+      "_order": 11,
+      "child_count": 0,
+      "depth": 4
+    }
+  ],
+  "edges": [
+    {
+      "id": "main-debug-objective->baseline-run",
+      "source": "main-debug-objective",
+      "target": "baseline-run",
+      "type": "parent"
+    },
+    {
+      "id": "baseline-run->baseline-evidence",
+      "source": "baseline-run",
+      "target": "baseline-evidence",
+      "type": "parent"
+    },
+    {
+      "id": "main-debug-objective->input-check-route",
+      "source": "main-debug-objective",
+      "target": "input-check-route",
+      "type": "parent"
+    },
+    {
+      "id": "input-check-route->trial-extend-timeout",
+      "source": "input-check-route",
+      "target": "trial-extend-timeout",
+      "type": "parent"
+    },
+    {
+      "id": "trial-extend-timeout->evidence-timeout-not-root",
+      "source": "trial-extend-timeout",
+      "target": "evidence-timeout-not-root",
+      "type": "parent"
+    },
+    {
+      "id": "main-debug-objective->cache-route",
+      "source": "main-debug-objective",
+      "target": "cache-route",
+      "type": "parent"
+    },
+    {
+      "id": "cache-route->trial-disable-cache",
+      "source": "cache-route",
+      "target": "trial-disable-cache",
+      "type": "parent"
+    },
+    {
+      "id": "cache-route->trial-cache-key-scope",
+      "source": "cache-route",
+      "target": "trial-cache-key-scope",
+      "type": "parent"
+    },
+    {
+      "id": "trial-cache-key-scope->evidence-cache-key-fits",
+      "source": "trial-cache-key-scope",
+      "target": "evidence-cache-key-fits",
+      "type": "parent"
+    },
+    {
+      "id": "trial-cache-key-scope->final-fix",
+      "source": "trial-cache-key-scope",
+      "target": "final-fix",
+      "type": "parent"
+    },
+    {
+      "id": "final-fix->final-regression-run",
+      "source": "final-fix",
+      "target": "final-regression-run",
+      "type": "parent"
+    }
+  ]
+}
