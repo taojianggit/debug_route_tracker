@@ -4,6 +4,10 @@ A local-first map of what you tried, why, and what failed.
 
 Stop losing context across long debugging sessions.
 
+## Why This Exists
+
+After 20 AI-assisted debugging turns, the problem is no longer code. The problem is remembering which branch failed, which evidence mattered, and where to resume.
+
 ## Project Overview
 
 Debug Route Tracker is a route map for AI-assisted coding and complex debugging. It records each attempt, branch, failure, evidence item, and conclusion so long Codex, Claude Code, Cursor, or other agent sessions do not lose the debugging path.

@@ -4,6 +4,10 @@ A local-first map of what you tried, why, and what failed.
 
 Stop losing context across long debugging sessions.
 
+## Why This Exists
+
+After 20 AI-assisted debugging turns, the problem is no longer code. The problem is remembering which branch failed, which evidence mattered, and where to resume.
+
 Debug Route Tracker 是给 AI 编程和复杂调试用的路线图：记录每次尝试、分支、失败、证据和结论。
 
 它适合 Codex、Claude Code、Cursor 等 AI 辅助编程场景。调试十几轮以后，你仍然可以看清做过什么、为什么改、哪个分支失败了，以及当前路线是否偏离主线目标。
